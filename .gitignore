@@ -1,3 +1,6 @@
+# clasp (Google Apps Script CLI)
+.clasp.json
+
 # Logs
 logs
 *.log
