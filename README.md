@@ -4,16 +4,22 @@ A reusable starter for Google Apps Script projects using CLASP and VS Code.
 
 ## Setup
 
-1. Install dependencies:
+1. Copy or clone this template into a separate folder for your actual project, for example:
+   ```sh
+   mkdir C:/Users/andre/Dev/MyProject
+   cd C:/Users/andre/Dev/MyProject
+   ```
+   Do not use the template folder itself as your working project folder.
+2. Install dependencies:
    ```sh
    npm install
    ```
-2. Install recommended VS Code extensions if prompted.
-3. Authenticate CLASP:
+3. Install recommended VS Code extensions if prompted.
+4. Authenticate CLASP:
    ```sh
    npx clasp login
    ```
-4. Create or clone your project:
+5. Create or clone your project:
    - New project:
      ```sh
      npx clasp create --title "My Project" --rootDir .
@@ -22,7 +28,7 @@ A reusable starter for Google Apps Script projects using CLASP and VS Code.
      ```sh
      npx clasp clone <SCRIPT_ID> .
      ```
-5. Update `.clasp.json` with the correct `scriptId` if needed.
+6. Update `.clasp.json` with the correct `scriptId` if needed.
 
 ## Development
 
