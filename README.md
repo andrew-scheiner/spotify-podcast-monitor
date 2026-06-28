@@ -54,3 +54,4 @@ A reusable starter for Google Apps Script projects using CLASP and VS Code.
 - Use `*.gs` as JavaScript files in VS Code.
 - Keep `appsscript.json` scoped to the project; update scopes only when necessary.
 - `node_modules/` and `.vscode/` are ignored in `.claspignore`.
+- When using CLASP, keep the Apps Script manifest at the project root and avoid pushing dependency folders such as `node_modules/`.
