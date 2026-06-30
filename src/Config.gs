@@ -1,27 +1,6 @@
+﻿// Vanilla template configuration file.
+// Add shared constants and configuration values here.
+
 const SS = SpreadsheetApp.getActiveSpreadsheet();
 
-const {ZZZ_KMS_ID} = GASConfigLibrary.getFolderIds();
-
-// Email addresses mapped to listener codes
-const EMAILS_BY_LISTENER = {
-  AAS: 'andrew.scheiner@gmail.com',
-  HRS: 'helen.sender@gmail.com'
-};
-
-
-const SORT_CONFIGS = {
-  Cpi: {
-    sortColumns: [
-      { column: 2, ascending: true },
-      { column: 3, ascending: true }
-    ],
-    headerRows: 1
-  },
-  Podcasts: {
-    sortColumns: [
-      { column: 5, ascending: true },
-      { column: 2, ascending: true }
-    ],
-    headerRows: 1
-  },
-};
+const TEMPLATE_NOTE = 'This is a vanilla GAS template. Replace with your project config.';

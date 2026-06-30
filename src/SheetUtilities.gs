@@ -1,15 +1,9 @@
-function backupSpreadsheet() {
-  GASLibrary.copySpreadsheetToDrive(ZZZ_KMS_ID, "Backup");
-}
+﻿// Placeholder sheet utility functions.
 
-function hideDoneActions() {
-  GASLibrary.hideDoneActions();
-}
-
-function resetFilter(){
-  GASLibrary.resetFilter();
+function resetFilter() {
+    // Add reset filter logic here.
 }
 
 function sortActiveSheet() {
-  GASLibrary.sortSheetByConfig(SS, SORT_CONFIGS);
+    // Add sheet sorting logic here.
 }

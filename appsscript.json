@@ -1,21 +1,5 @@
-{
-  "timeZone": "Europe/Madrid",
-  "dependencies": {
-    "libraries": [
-      {
-        "userSymbol": "GASConfigLibrary",
-        "version": "0",
-        "libraryId": "19mt3oek1jSRRq97idSa9vzDuYtO8o7NYAxH-3cIVwj24I_02l5CAgHY4",
-        "developmentMode": true
-      },
-      {
-        "userSymbol": "GASLibrary",
-        "version": "0",
-        "libraryId": "1OaoB8sXTnsTh6yPaC6AnOAvPtTIrkVb5SRNflS7JJ26TNjcTZa8xH6RW",
-        "developmentMode": true
-      }
-    ]
-  },
-  "exceptionLogging": "STACKDRIVER",
-  "runtimeVersion": "V8"
+﻿{
+  timeZone: Etc/UTC,
+  exceptionLogging: STACKDRIVER,
+  runtimeVersion: V8
 }
