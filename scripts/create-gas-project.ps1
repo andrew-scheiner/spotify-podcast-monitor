@@ -37,6 +37,27 @@ Get-ChildItem -Force -Path $TemplateRoot | Where-Object { $exclude -notcontains 
     }
 }
 
+$projectReadme = @"
+# $ProjectName
+
+A Google Apps Script project created from the GAS template.
+
+## Getting started
+1. Install dependencies with `npm install`
+2. Authenticate CLASP if needed with `npx clasp login`
+3. Edit the Apps Script files in the `src` folder and deploy when ready
+
+## Project files
+- `src/` contains the Apps Script source files
+- `appsscript.json` defines the Apps Script project manifest
+"@
+
+Set-Content -Path (Join-Path $TargetRoot 'README.md') -Value $projectReadme -Encoding utf8
+
+if (Test-Path (Join-Path $TargetRoot 'scripts')) {
+    Remove-Item -LiteralPath (Join-Path $TargetRoot 'scripts') -Recurse -Force -ErrorAction SilentlyContinue
+}
+
 if ($ScriptId) {
     $claspFile = Join-Path $TargetRoot '.clasp.json'
     if (Test-Path $claspFile) {
