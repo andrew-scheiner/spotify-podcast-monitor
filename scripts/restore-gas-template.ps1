@@ -1,6 +1,5 @@
 function Get-TemplateRoot {
-    $scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
-    return Resolve-Path -Path $scriptPath | Select-Object -ExpandProperty Path
+    return Resolve-Path -Path (Join-Path $PSScriptRoot '..') | Select-Object -ExpandProperty Path
 }
 
 $TemplateRoot = Get-TemplateRoot
@@ -106,6 +105,6 @@ foreach ($entry in $files.GetEnumerator()) {
 }
 
 Remove-Item -LiteralPath (Join-Path $TemplateRoot 'node_modules') -Recurse -Force -ErrorAction SilentlyContinue
-Remove-Item -LiteralPath (Join-Path $TemplateRoot 'src\*.js') -Force -ErrorAction SilentlyContinue
+Get-ChildItem -LiteralPath (Join-Path $TemplateRoot 'src') -File -Filter '*.js' -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
 
 Write-Host 'Template restore complete.' -ForegroundColor Green

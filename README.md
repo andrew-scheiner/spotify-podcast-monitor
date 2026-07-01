@@ -1,4 +1,4 @@
-﻿# Google Apps Script Project Template
+# Google Apps Script Project Template
 
 A reusable starter for Google Apps Script projects using CLASP and VS Code.
 
@@ -18,26 +18,14 @@ The script will:
 - optionally pull the Apps Script project into the new folder
 - restore the template back to vanilla after project creation
 
-If you do not have an existing Apps Script project ID, omit the `-ScriptId` parameter to create a new empty project folder from the template.
-
 ## After creation
 
 1. `cd` into the new project folder
 2. run `npm install`
 3. verify files and project-specific settings
-4. initialize Git and push to GitHub as needed
-
-## Prerequisites
-
-- Node.js and `npx` installed
-- CLASP installed and authenticated if you want to pull an existing Apps Script project:
-
-```powershell
-npx clasp login
-```
+4. initialize Git and push to GitHub
 
 ## Notes
 
 - `node_modules` is not part of the template and is excluded from new copies
 - `scripts` is used only for template automation and is not copied into new projects
-- The template is restored to its vanilla starter state after each new project is created

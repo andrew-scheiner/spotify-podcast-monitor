@@ -9,8 +9,7 @@ param(
 )
 
 function Get-TemplateRoot {
-    $scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
-    return Resolve-Path -Path $scriptPath | Select-Object -ExpandProperty Path
+    return Resolve-Path -Path (Join-Path $PSScriptRoot '..') | Select-Object -ExpandProperty Path
 }
 
 $TemplateRoot = Get-TemplateRoot
@@ -58,25 +57,40 @@ if (Test-Path (Join-Path $TargetRoot 'scripts')) {
     Remove-Item -LiteralPath (Join-Path $TargetRoot 'scripts') -Recurse -Force -ErrorAction SilentlyContinue
 }
 
-if ($ScriptId) {
-    $claspFile = Join-Path $TargetRoot '.clasp.json'
-    if (Test-Path $claspFile) {
-        Write-Host "Updating .clasp.json with script ID: $ScriptId" -ForegroundColor Yellow
-        $json = Get-Content -Path $claspFile -Raw | ConvertFrom-Json
-        $json.scriptId = $ScriptId
-        $json | ConvertTo-Json -Depth 10 | Set-Content -Path $claspFile -Encoding utf8
+$claspFile = Join-Path $TargetRoot '.clasp.json'
+$claspConfig = @{
+    scriptId = if ($ScriptId) { $ScriptId } else { 'ENTER_SCRIPT_ID_HERE' }
+    rootDir = 'src'
+    scriptExtensions = @('.js', '.gs')
+    htmlExtensions = @('.html')
+    jsonExtensions = @('.json')
+    filePushOrder = @()
+    skipSubdirectories = $false
+}
+$claspConfig | ConvertTo-Json -Depth 10 | Set-Content -Path $claspFile -Encoding utf8
 
-        Write-Host 'Pulling Apps Script project into the new folder...' -ForegroundColor Cyan
-        Push-Location $TargetRoot
-        try {
-            npx clasp pull
-        } catch {
-            Write-Warning 'clasp pull failed. Ensure CLASP is installed and authenticated.'
-        }
-        Pop-Location
-    } else {
-        Write-Warning '.clasp.json not found in the new project. Skipping scriptId update.'
+if ($ScriptId) {
+    Write-Host "Updating .clasp.json with script ID: $ScriptId" -ForegroundColor Yellow
+
+    Write-Host 'Pulling Apps Script project into the new folder...' -ForegroundColor Cyan
+    Push-Location $TargetRoot
+    try {
+        npx clasp pull
+    } catch {
+        Write-Warning 'clasp pull failed. Ensure CLASP is installed and authenticated.'
     }
+    Pop-Location
+}
+
+New-Item -ItemType Directory -Path (Join-Path $TargetRoot 'src') -Force | Out-Null
+$sourceDirectory = Join-Path $TargetRoot 'src'
+$pulledScriptFiles = Get-ChildItem -LiteralPath $TargetRoot -Recurse -File -Filter '*.js' | Where-Object { $_.FullName -notmatch '[\\/]node_modules[\\/]' }
+foreach ($scriptFile in $pulledScriptFiles) {
+    $destinationPath = Join-Path $sourceDirectory ([System.IO.Path]::ChangeExtension($scriptFile.Name, '.gs'))
+    if (Test-Path $destinationPath) {
+        Remove-Item -LiteralPath $destinationPath -Force -ErrorAction SilentlyContinue
+    }
+    Move-Item -LiteralPath $scriptFile.FullName -Destination $destinationPath -Force
 }
 
 Write-Host "New project created at: $TargetRoot" -ForegroundColor Green

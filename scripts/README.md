@@ -20,8 +20,10 @@ Parameters:
 This script:
 
 - copies the template into the new project folder
+- creates a valid `.clasp.json` rooted at `src`
 - updates `.clasp.json` with the provided script ID
 - pulls the Apps Script project if an ID is provided
+- moves any pulled `.js` Apps Script function files into `src` and renames them to `.gs`, leaving no root-level duplicates
 - restores the template back to vanilla
 
 ## restore-gas-template.ps1
