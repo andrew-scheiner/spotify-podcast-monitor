@@ -1,4 +1,4 @@
-// Placeholder sheet utility functions.
+﻿// Placeholder sheet utility functions.
 
 function resetFilter() {
     // Add reset filter logic here.

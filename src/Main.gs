@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Vanilla Google Apps Script template entry point.
  * Replace or extend this file with your project's functions.
  */

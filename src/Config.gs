@@ -1,4 +1,4 @@
-// Vanilla template configuration file.
+﻿// Vanilla template configuration file.
 // Add shared constants and configuration values here.
 
 const SS = SpreadsheetApp.getActiveSpreadsheet();

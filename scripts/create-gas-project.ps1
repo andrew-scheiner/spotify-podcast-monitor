@@ -1,8 +1,8 @@
 param(
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [string]$ProjectName,
 
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [string]$DestinationPath,
 
     [string]$ScriptId
@@ -31,7 +31,8 @@ Get-ChildItem -Force -Path $TemplateRoot | Where-Object { $exclude -notcontains 
     $dest = Join-Path $TargetRoot $_.Name
     if ($_.PSIsContainer) {
         Copy-Item -Path $_.FullName -Destination $dest -Recurse -Force
-    } else {
+    }
+    else {
         Copy-Item -Path $_.FullName -Destination $dest -Force
     }
 }
@@ -59,12 +60,12 @@ if (Test-Path (Join-Path $TargetRoot 'scripts')) {
 
 $claspFile = Join-Path $TargetRoot '.clasp.json'
 $claspConfig = @{
-    scriptId = if ($ScriptId) { $ScriptId } else { 'ENTER_SCRIPT_ID_HERE' }
-    rootDir = 'src'
-    scriptExtensions = @('.js', '.gs')
-    htmlExtensions = @('.html')
-    jsonExtensions = @('.json')
-    filePushOrder = @()
+    scriptId           = if ($ScriptId) { $ScriptId } else { 'ENTER_SCRIPT_ID_HERE' }
+    rootDir            = 'src'
+    scriptExtensions   = @('.js', '.gs')
+    htmlExtensions     = @('.html')
+    jsonExtensions     = @('.json')
+    filePushOrder      = @()
     skipSubdirectories = $false
 }
 $claspConfig | ConvertTo-Json -Depth 10 | Set-Content -Path $claspFile -Encoding utf8
@@ -76,7 +77,8 @@ if ($ScriptId) {
     Push-Location $TargetRoot
     try {
         npx clasp pull
-    } catch {
+    }
+    catch {
         Write-Warning 'clasp pull failed. Ensure CLASP is installed and authenticated.'
     }
     Pop-Location
@@ -84,6 +86,11 @@ if ($ScriptId) {
 
 New-Item -ItemType Directory -Path (Join-Path $TargetRoot 'src') -Force | Out-Null
 $sourceDirectory = Join-Path $TargetRoot 'src'
+$manifestSource = Join-Path $TargetRoot 'appsscript.json'
+$manifestDestination = Join-Path $sourceDirectory 'appsscript.json'
+if (Test-Path $manifestSource) {
+    Copy-Item -Path $manifestSource -Destination $manifestDestination -Force
+}
 $pulledScriptFiles = Get-ChildItem -LiteralPath $TargetRoot -Recurse -File -Filter '*.js' | Where-Object { $_.FullName -notmatch '[\\/]node_modules[\\/]' }
 foreach ($scriptFile in $pulledScriptFiles) {
     $destinationPath = Join-Path $sourceDirectory ([System.IO.Path]::ChangeExtension($scriptFile.Name, '.gs'))
