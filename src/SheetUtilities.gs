@@ -11,5 +11,6 @@ function resetFilter(){
 }
 
 function sortActiveSheet() {
-  GASLibrary.sortSheetByConfig(SS, SORT_CONFIGS);
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  GASLibrary.sortSheetByConfig(ss, SORT_CONFIGS);
 }

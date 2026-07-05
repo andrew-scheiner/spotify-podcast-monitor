@@ -1,5 +1,3 @@
-const SS = SpreadsheetApp.getActiveSpreadsheet();
-
 const {ZZZ_KMS_ID} = GASConfigLibrary.getFolderIds();
 
 // Email addresses mapped to listener codes
