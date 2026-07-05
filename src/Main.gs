@@ -2,15 +2,16 @@
 
 // Note: A weekly trigger already runs `checkForNewEpisodes()` every Sunday between 02:00 and 03:00
 
-
 function createMenu() {
   const ui = SpreadsheetApp.getUi();
-  let customMenu = ui.createMenu('Custom')
+  let customMenu = ui
+    .createMenu('Custom')
     .addItem('Backup Spreadsheet', 'backupSpreadsheet')
     .addItem('Reset Filter', 'resetFilter')
+    .addItem('Reset Last Run Date', 'resetLastRunDate')
     .addItem('Sort Sheet', 'sortActiveSheet')
     .addSeparator()
-    .addItem('Backfill Last 7 Days', 'runBackfillLast7Days')
+    .addItem('Backfill Last 7 Days', 'runBackfillLast7Days');
   /*
   .addSubMenu(ui.createMenu('Update Data Source(s)')
     .addItem('Update All', 'updateAllDataSources')
@@ -23,8 +24,54 @@ function createMenu() {
 /**
  * Manual helper to run entry point function in case of error with time-triggered version.
  */
+const LAST_RUN_DATE_PROP = 'LAST_RUN_DATE';
+const INITIAL_LAST_RUN_DATE_LOCAL = new Date('2026-06-28T02:48:00');
+
 function runBackfillLast7Days() {
   checkForNewEpisodes(7, true);
+}
+
+function getLastRunDate() {
+  const props = PropertiesService.getScriptProperties();
+  const stored = props.getProperty(LAST_RUN_DATE_PROP);
+
+  if (stored) {
+    const parsed = new Date(stored);
+    if (!isNaN(parsed.getTime())) {
+      Logger.log(`Using stored last run date: ${parsed.toISOString()}`);
+      return parsed;
+    }
+    Logger.log(`Stored last run date invalid: ${stored}`);
+  }
+
+  const initialDate = new Date(INITIAL_LAST_RUN_DATE_LOCAL);
+  if (!isNaN(initialDate.getTime())) {
+    props.setProperty(LAST_RUN_DATE_PROP, initialDate.toISOString());
+    Logger.log(`Initialized ${LAST_RUN_DATE_PROP} to ${initialDate.toISOString()}`);
+    return initialDate;
+  }
+
+  const fallback = new Date();
+  fallback.setDate(fallback.getDate() - 7);
+  Logger.log(`Fallback last run date used: ${fallback.toISOString()}`);
+  return fallback;
+}
+
+function resetLastRunDate() {
+  const initialDate = new Date(INITIAL_LAST_RUN_DATE_LOCAL);
+  if (isNaN(initialDate.getTime())) {
+    throw new Error('Invalid initial last run date');
+  }
+  setLastRunDate(initialDate);
+  SpreadsheetApp.getUi().alert(`Last run date reset to ${initialDate.toISOString()}`);
+}
+
+function setLastRunDate(date) {
+  if (!(date instanceof Date) || isNaN(date.getTime())) {
+    return;
+  }
+  PropertiesService.getScriptProperties().setProperty(LAST_RUN_DATE_PROP, date.toISOString());
+  Logger.log(`Updated ${LAST_RUN_DATE_PROP} to ${date.toISOString()}`);
 }
 
 // ======================================================================
@@ -35,7 +82,6 @@ function runBackfillLast7Days() {
  * Main entry point — checks for new podcast episodes since the last run.
  */
 function checkForNewEpisodes(forceBackfillDays = null, forceSendAll = false) {
-
   // Guard against GAS time trigger passing event object as first argument
   if (typeof forceBackfillDays !== 'number') {
     forceBackfillDays = null;
@@ -60,14 +106,15 @@ function checkForNewEpisodes(forceBackfillDays = null, forceSendAll = false) {
   let episodesByListener = {};
 
   rows.forEach((row, index) => {
-
     // ✅ CLEAN INPUTS (CRITICAL FIX)
     let showIdRaw = row[COL_SHOW_ID];
     let showId = showIdRaw ? String(showIdRaw).trim() : '';
 
     const name = row[COL_NAME];
     const lastDateRaw = row[COL_LAST_DATE];
-    Logger.log(`${showId} | lastDateRaw type: ${typeof lastDateRaw} | value: ${lastDateRaw} | isDate: ${lastDateRaw instanceof Date}`);
+    Logger.log(
+      `${showId} | lastDateRaw type: ${typeof lastDateRaw} | value: ${lastDateRaw} | isDate: ${lastDateRaw instanceof Date}`
+    );
     const listenerCode = row[COL_LISTENER];
 
     if (!showId) {
@@ -88,7 +135,6 @@ function checkForNewEpisodes(forceBackfillDays = null, forceSendAll = false) {
           lastDate = new Date(t);
           parseSource = 'Date';
         }
-
       } else if (typeof lastDateRaw === 'number' && lastDateRaw > 0) {
         // Google Sheets serial → JS Date
         const d = new Date((lastDateRaw - 25569) * 86400 * 1000);
@@ -98,7 +144,6 @@ function checkForNewEpisodes(forceBackfillDays = null, forceSendAll = false) {
           lastDate = adjusted;
           parseSource = 'number(serial)';
         }
-
       } else if (typeof lastDateRaw === 'string') {
         const trimmed = lastDateRaw.trim();
 
@@ -110,7 +155,6 @@ function checkForNewEpisodes(forceBackfillDays = null, forceSendAll = false) {
           }
         }
       }
-
     } catch (err) {
       Logger.log(`${showId} | ERROR parsing date: ${err}`);
       lastDate = null;
@@ -118,9 +162,7 @@ function checkForNewEpisodes(forceBackfillDays = null, forceSendAll = false) {
 
     // 🚨 CRITICAL: enforce validity AFTER parsing
     const isValid =
-      lastDate instanceof Date &&
-      !isNaN(lastDate.getTime()) &&
-      lastDate.getFullYear() > 2000; // guard against garbage dates
+      lastDate instanceof Date && !isNaN(lastDate.getTime()) && lastDate.getFullYear() > 2000; // guard against garbage dates
 
     if (!isValid) {
       Logger.log(
@@ -129,9 +171,7 @@ function checkForNewEpisodes(forceBackfillDays = null, forceSendAll = false) {
 
       lastDate = null;
     } else {
-      Logger.log(
-        `${showId} | OK lastDate: ${lastDate} (from ${parseSource})`
-      );
+      Logger.log(`${showId} | OK lastDate: ${lastDate} (from ${parseSource})`);
     }
 
     // =========================================================
@@ -142,9 +182,8 @@ function checkForNewEpisodes(forceBackfillDays = null, forceSendAll = false) {
     if (forceBackfillDays !== null && forceBackfillDays !== undefined) {
       cutoffDate = new Date();
       cutoffDate.setDate(cutoffDate.getDate() - forceBackfillDays);
-
     } else {
-      cutoffDate = lastDate;
+      cutoffDate = getLastRunDate();
     }
 
     // =========================================================
@@ -174,10 +213,12 @@ function checkForNewEpisodes(forceBackfillDays = null, forceSendAll = false) {
     // Assign to listeners
     // =========================================================
     const listeners = listenerCode
-      ? String(listenerCode).split(',').map(s => s.trim())
+      ? String(listenerCode)
+          .split(',')
+          .map((s) => s.trim())
       : [];
 
-    listeners.forEach(code => {
+    listeners.forEach((code) => {
       if (!code) return;
 
       allListeners.add(code);
@@ -188,7 +229,7 @@ function checkForNewEpisodes(forceBackfillDays = null, forceSendAll = false) {
 
       episodesByListener[code].push({
         showName: name,
-        episodes: newEpisodes
+        episodes: newEpisodes,
       });
     });
 
@@ -198,13 +239,10 @@ function checkForNewEpisodes(forceBackfillDays = null, forceSendAll = false) {
     try {
       const latestDate = newEpisodes[0].published;
 
-      sheet.getRange(index + 2, COL_LAST_DATE + 1)
-        .setValue(new Date(latestDate));
-
+      sheet.getRange(index + 2, COL_LAST_DATE + 1).setValue(new Date(latestDate));
     } catch (err) {
       Logger.log(`Failed updating date for ${showId}: ${err.message}`);
     }
-
   });
 
   // =========================================================
@@ -212,10 +250,11 @@ function checkForNewEpisodes(forceBackfillDays = null, forceSendAll = false) {
   // =========================================================
   if (!forceSendAll && allListeners.size === 0) {
     Logger.log('No new episodes found');
+    setLastRunDate(new Date());
     return;
   }
 
-  allListeners.forEach(listenerCode => {
+  allListeners.forEach((listenerCode) => {
     const emailAddress = EMAILS_BY_LISTENER[listenerCode];
 
     if (!emailAddress) {
@@ -228,9 +267,9 @@ function checkForNewEpisodes(forceBackfillDays = null, forceSendAll = false) {
     if (!forceSendAll && content.length === 0) return;
 
     const emailBody = generateEmailContent(
-      content.map(item => ({
+      content.map((item) => ({
         podcastName: item.showName,
-        episodes: item.episodes
+        episodes: item.episodes,
       })),
       []
     );
@@ -238,18 +277,18 @@ function checkForNewEpisodes(forceBackfillDays = null, forceSendAll = false) {
     MailApp.sendEmail({
       to: emailAddress,
       subject: '🎧 New Podcast Episodes',
-      htmlBody: emailBody
+      htmlBody: emailBody,
     });
 
     Logger.log(`✅ Email sent to ${listenerCode}`);
   });
+
+  setLastRunDate(new Date());
 }
 
 // ======================================================================
 // 2️⃣ Orchestration / Engines “How the process flows”
 // ======================================================================
-
-
 
 function processSheetWithRules(config) {
   validateConfig(config);
@@ -264,7 +303,7 @@ function processSheetWithRules(config) {
   const context = {
     errors: [],
     retries: [],
-    auditLogs: [] // ✅ NEW
+    auditLogs: [], // ✅ NEW
   };
 
   if (beforeAll) beforeAll(context);
@@ -280,13 +319,12 @@ function processSheetWithRules(config) {
       }
 
       if (afterEach) afterEach(rowObj, index, context);
-
     } catch (error) {
       const errorRecord = {
         rowIndex: index,
         rowData: rowObj,
         message: error.message,
-        stack: error.stack
+        stack: error.stack,
       };
 
       context.errors.push(errorRecord);
@@ -296,13 +334,13 @@ function processSheetWithRules(config) {
         level: 'ERROR',
         message: error.message,
         rowIndex: index,
-        context: rowObj
+        context: rowObj,
       });
 
       if (config.enableRetry) {
         context.retries.push({
           rowIndex: index,
-          rowObj
+          rowObj,
         });
       }
     }
@@ -312,7 +350,6 @@ function processSheetWithRules(config) {
     afterAll({ sheet, header }, context);
   }
 }
-
 
 function validateConfig(config) {
   if (!config) throw new Error('Config is required');
@@ -326,7 +363,6 @@ function validateConfig(config) {
   }
 }
 
-
 function retryFailedRows(config, retries, context) {
   retries.forEach(({ rowIndex, rowObj }) => {
     try {
@@ -336,7 +372,6 @@ function retryFailedRows(config, retries, context) {
     }
   });
 }
-
 
 // ======================================================================
 // 3️⃣ Domain Logic “What this script actually does”
@@ -350,7 +385,6 @@ function retryFailedRows(config, retries, context) {
  */
 function getNewEpisodesForShow(showId, cutoffDate) {
   try {
-
     // 🔒 HARD GUARD (important)
     if (!showId || typeof showId !== 'string') {
       Logger.log(`Invalid showId: ${showId}`);
@@ -367,7 +401,7 @@ function getNewEpisodesForShow(showId, cutoffDate) {
     let url = `https://api.spotify.com/v1/shows/${showId}/episodes?market=US&limit=50`;
     const options = {
       method: 'get',
-      headers: { Authorization: 'Bearer ' + token }
+      headers: { Authorization: 'Bearer ' + token },
     };
 
     let allNewEpisodes = [];
@@ -392,24 +426,20 @@ function getNewEpisodesForShow(showId, cutoffDate) {
         const releaseDate = new Date(ep.release_date);
         releaseDate.setHours(23, 59, 59, 999);
 
-
-
         // 🚨 HARD STOP — stop pagination when we hit older content
         if (releaseDate <= cutoffDate) {
           Logger.log(
             `${showId} | stopping pagination | episode: "${ep.name}" | release: ${ep.release_date} | cutoff: ${cutoffDate.toISOString()}`
           );
 
-          return allNewEpisodes.sort(
-            (a, b) => new Date(b.published) - new Date(a.published)
-          );
+          return allNewEpisodes.sort((a, b) => new Date(b.published) - new Date(a.published));
         }
 
         // ✅ Only add NEW episodes
         allNewEpisodes.push({
           title: ep.name || 'Untitled',
           link: ep.external_urls?.spotify || '',
-          published: ep.release_date
+          published: ep.release_date,
         });
       }
 
@@ -423,16 +453,12 @@ function getNewEpisodesForShow(showId, cutoffDate) {
       }
     }
 
-    return allNewEpisodes.sort(
-      (a, b) => new Date(b.published) - new Date(a.published)
-    );
-
+    return allNewEpisodes.sort((a, b) => new Date(b.published) - new Date(a.published));
   } catch (error) {
     Logger.log(`Error fetching episodes for show ${showId}: ${error}`);
     return [];
   }
 }
-
 
 /**
  * Builds the HTML email content.
@@ -446,7 +472,7 @@ function generateEmailContent(newEpisodesByPodcast, noNewPodcasts = []) {
     episodeCard: 'margin-bottom: 5px; border: 1px solid #ddd; padding: 8px; border-radius: 4px;',
     episodeTitle: 'color: #1DB954; text-decoration: none; font-weight: bold; font-size: 14px;',
     publishDate: 'color: #666; margin: 3px 0; font-size: 12px;',
-    footer: 'margin-top: 20px; font-size: 12px; color: #666;'
+    footer: 'margin-top: 20px; font-size: 12px; color: #666;',
   };
 
   let html = `<div style="${styles.container}">
@@ -456,7 +482,7 @@ function generateEmailContent(newEpisodesByPodcast, noNewPodcasts = []) {
     newEpisodesByPodcast.forEach(({ podcastName, episodes }) => {
       html += `<div style="${styles.podcastSection}">
         <h2 style="${styles.podcastTitle}">${podcastName}</h2>`;
-      episodes.forEach(ep => {
+      episodes.forEach((ep) => {
         html += `<div style="${styles.episodeCard}">
             <a href="${ep.link}" style="${styles.episodeTitle}">${ep.title}</a>
             <p style="${styles.publishDate}">Published: ${ep.published}</p>
@@ -473,7 +499,7 @@ function generateEmailContent(newEpisodesByPodcast, noNewPodcasts = []) {
       <details style="margin-top: 15px;">
         <summary style="font-weight: bold; color: #333;">No new podcasts released</summary>
         <ul style="margin-top: 8px; padding-left: 20px; color: #555;">
-          ${noNewPodcasts.map(name => `<li>${name}</li>`).join('')}
+          ${noNewPodcasts.map((name) => `<li>${name}</li>`).join('')}
         </ul>
       </details>
     `;
@@ -498,10 +524,9 @@ function sendNotificationEmail(recipient, htmlContent) {
   MailApp.sendEmail({
     to: recipient,
     subject: 'New Podcast Episodes 🎙',
-    htmlBody: htmlContent
+    htmlBody: htmlContent,
   });
 }
-
 
 // ======================================================================
 // 4️⃣ External Services / APIs “Talking to the outside world”
@@ -520,17 +545,15 @@ function getSpotifyToken() {
   const options = {
     method: 'post',
     payload: { grant_type: 'client_credentials' },
-    headers: { Authorization: 'Basic ' + Utilities.base64Encode(clientId + ':' + clientSecret) }
+    headers: { Authorization: 'Basic ' + Utilities.base64Encode(clientId + ':' + clientSecret) },
   };
   const response = UrlFetchApp.fetch(tokenUrl, options);
   return JSON.parse(response.getContentText()).access_token;
 }
 
-
 // ======================================================================
 // 5️⃣ Utilities / Helpers “Reusable building blocks”
 // ======================================================================
-
 
 function getOrCreateAuditSheet(ss) {
   const sheetName = 'AuditLog';
@@ -547,20 +570,15 @@ function getOrCreateAuditSheet(ss) {
 function writeAuditLogs(sheet, logs) {
   if (!logs || logs.length === 0) return;
 
-  const values = logs.map(log => [
+  const values = logs.map((log) => [
     new Date(),
     log.level || 'INFO',
     log.message || '',
     log.rowIndex ?? '',
-    log.context ? JSON.stringify(log.context) : ''
+    log.context ? JSON.stringify(log.context) : '',
   ]);
 
-  sheet.getRange(
-    sheet.getLastRow() + 1,
-    1,
-    values.length,
-    values[0].length
-  ).setValues(values);
+  sheet.getRange(sheet.getLastRow() + 1, 1, values.length, values[0].length).setValues(values);
 }
 
 /**
@@ -620,4 +638,3 @@ function batchSetRowValues(sheet, header, updates) {
 
   dataRange.setValues(values);
 }
-
