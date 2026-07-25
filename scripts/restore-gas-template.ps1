@@ -20,7 +20,21 @@ $files = @{
 {
   "timeZone": "Etc/UTC",
   "exceptionLogging": "STACKDRIVER",
-  "runtimeVersion": "V8"
+    "runtimeVersion": "V8",
+    "dependencies": {
+        "libraries": [
+            {
+                "userSymbol": "GASLibrary",
+                "libraryId": "124dIgQdSYpMXAf9J0vFewzyHG0PopddN50UQLw0d1wOZz89rZLEpkMAE",
+                "developmentMode": true
+            },
+            {
+                "userSymbol": "GASConfigLibrary",
+                "libraryId": "19mt3oek1jSRRq97idSa9vzDuYtO8o7NYAxH-3cIVwj24I_02l5CAgHY4",
+                "developmentMode": true
+            }
+        ]
+    }
 }
 '@;
     '.\README.md' = @'
@@ -42,6 +56,9 @@ The script will:
 - update `.clasp.json` with the provided Apps Script project ID
 - optionally pull the Apps Script project into the new folder
 - restore the template back to vanilla after project creation
+
+Library alias autocomplete is driven by `src/LibraryGlobals.d.ts`. Keep it aligned with
+`appsscript.json > dependencies > libraries > userSymbol` values.
 
 ## After creation
 
@@ -95,6 +112,17 @@ function onEdit(e) {
     // Placeholder onEdit trigger logic.
     // e.range, e.value, and other event data are available here.
 }
+'@;
+    '.\src\LibraryGlobals.d.ts' = @'
+/**
+ * Ambient declarations for Apps Script library aliases used by this project.
+ *
+ * Keep this file in sync with appsscript.json dependencies.libraries[].userSymbol.
+ * These declarations are editor-only and do not affect runtime behavior.
+ */
+
+declare const GASLibrary: any;
+declare const GASConfigLibrary: any;
 '@;
 }
 

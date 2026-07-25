@@ -5,6 +5,7 @@ This repository is a reusable starter for Google Apps Script projects. It provid
 ## What the template includes
 
 - [src](src): the local Apps Script source folder for project code
+- [src/LibraryGlobals.d.ts](src/LibraryGlobals.d.ts): editor-only global declarations for Apps Script library aliases
 - [appsscript.json](appsscript.json): the Apps Script manifest for the project
 - [scripts/create-gas-project.ps1](scripts/create-gas-project.ps1): creates a new project from the template
 - [scripts/restore-gas-template.ps1](scripts/restore-gas-template.ps1): restores the template after a new project is created
@@ -14,6 +15,8 @@ This repository is a reusable starter for Google Apps Script projects. It provid
 The scaffold script copies the template into a new folder, prepares project-specific files, creates a CLASP configuration, optionally pulls an existing Apps Script project by script ID, and then restores the template so it remains reusable for future projects.
 
 The scaffold script also runs `npm install` automatically so the project is ready to use immediately. When you edit `appsscript.json`, keep it at the project root and save it as UTF-8 without a BOM so CLASP can parse it correctly.
+
+If your Apps Script project uses external libraries, keep `src/LibraryGlobals.d.ts` aligned with `appsscript.json > dependencies > libraries > userSymbol` so aliases are consistently recognized by VS Code autocomplete.
 
 ## When to use it
 

@@ -15,5 +15,11 @@
   "javascript.validate.enable": false,
   "eslint.useFlatConfig": false,
   "task.quickOpen.showAll": true,
-  "statusBar.experimental.showCommands": true
+  "statusBar.experimental.showCommands": true,
+  "chat.tools.terminal.autoApprove": {
+    "/^\\$files = @\\('src/LibraryGlobals\\.d\\.ts','README\\.md','scripts/restore-gas-template\\.ps1'\\); foreach \\(\\$f in \\$files\\) \\{ Write-Output \"--- \\$f\"; \\$i=0; Get-Content \\$f \\| ForEach-Object \\{ \\$i\\+\\+; \\('\\{0,4\\}: \\{1\\}' -f \\$i, \\$_\\) \\} \\}$/": {
+      "approve": true,
+      "matchCommandLine": true
+    }
+  }
 }
