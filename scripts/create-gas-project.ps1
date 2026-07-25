@@ -86,10 +86,10 @@ if ($ScriptId) {
 
 New-Item -ItemType Directory -Path (Join-Path $TargetRoot 'src') -Force | Out-Null
 $sourceDirectory = Join-Path $TargetRoot 'src'
-$manifestSource = Join-Path $TargetRoot 'appsscript.json'
-$manifestDestination = Join-Path $sourceDirectory 'appsscript.json'
-if (Test-Path $manifestSource) {
-    Copy-Item -Path $manifestSource -Destination $manifestDestination -Force
+# Remove any appsscript.json that clasp pulled into src/ — the manifest lives at the project root only
+$manifestInSrc = Join-Path $sourceDirectory 'appsscript.json'
+if (Test-Path $manifestInSrc) {
+    Remove-Item -LiteralPath $manifestInSrc -Force
 }
 $pulledScriptFiles = Get-ChildItem -LiteralPath $TargetRoot -Recurse -File -Filter '*.js' | Where-Object { $_.FullName -notmatch '[\\/]node_modules[\\/]' }
 foreach ($scriptFile in $pulledScriptFiles) {
