@@ -61,7 +61,7 @@ if (Test-Path (Join-Path $TargetRoot 'scripts')) {
 $claspFile = Join-Path $TargetRoot '.clasp.json'
 $claspConfig = @{
     scriptId           = if ($ScriptId) { $ScriptId } else { 'ENTER_SCRIPT_ID_HERE' }
-    rootDir            = 'src'
+    rootDir            = ''
     scriptExtensions   = @('.js', '.gs')
     htmlExtensions     = @('.html')
     jsonExtensions     = @('.json')
@@ -86,11 +86,6 @@ if ($ScriptId) {
 
 New-Item -ItemType Directory -Path (Join-Path $TargetRoot 'src') -Force | Out-Null
 $sourceDirectory = Join-Path $TargetRoot 'src'
-# Remove any appsscript.json that clasp pulled into src/ — the manifest lives at the project root only
-$manifestInSrc = Join-Path $sourceDirectory 'appsscript.json'
-if (Test-Path $manifestInSrc) {
-    Remove-Item -LiteralPath $manifestInSrc -Force
-}
 $pulledScriptFiles = Get-ChildItem -LiteralPath $TargetRoot -Recurse -File -Filter '*.js' | Where-Object { $_.FullName -notmatch '[\\/]node_modules[\\/]' }
 foreach ($scriptFile in $pulledScriptFiles) {
     $destinationPath = Join-Path $sourceDirectory ([System.IO.Path]::ChangeExtension($scriptFile.Name, '.gs'))
