@@ -13,6 +13,8 @@ This repository is a reusable starter for Google Apps Script projects. It provid
 
 The scaffold script copies the template into a new folder, prepares project-specific files, creates a CLASP configuration, optionally pulls an existing Apps Script project by script ID, and then restores the template so it remains reusable for future projects.
 
+When you edit `appsscript.json`, keep it at the project root and save it as UTF-8 without a BOM so CLASP can parse it correctly.
+
 ## When to use it
 
 Use this template when you want a repeatable starting point for Apps Script projects that will be developed locally, managed with CLASP, and published to GitHub.
