@@ -35,18 +35,18 @@ cd "C:\Users\andre\Dev\Templates\gas-project-template"
 ## After the project is created
 
 1. Open the new project folder.
-2. Install dependencies with `npm install`.
-3. If needed, authenticate CLASP with `npx clasp login`.
-4. Review the generated files, especially `src/`, `appsscript.json`, and `.clasp.json`.
-5. Make sure `appsscript.json` stays in the project root, not inside `src/`.
-6. Save `appsscript.json` as plain UTF-8 without a BOM so CLASP can parse it correctly.
-7. Initialize Git and push to GitHub when you are ready.
+2. Authenticate CLASP once with `npx clasp login` if you have not already done so.
+3. Review the generated files, especially `src/`, `appsscript.json`, and `.clasp.json`.
+4. Make sure `appsscript.json` stays in the project root, not inside `src/`.
+5. Save `appsscript.json` as plain UTF-8 without a BOM so CLASP can parse it correctly.
+6. Initialize Git and push to GitHub when you are ready.
 
 ## CLASP and file layout notes
 
 - Keep Apps Script source files in the local `src` folder.
 - The manifest file must stay in the project root and must not be duplicated under `src/`.
 - Save `appsscript.json` without a UTF-8 BOM; some editors can add one automatically, which CLASP rejects as an invalid manifest.
+- The scaffold script installs dependencies automatically, so the created project is ready for `npx --no-install clasp pull` and `npx --no-install clasp push`.
 - If CLASP reports a manifest conflict or missing file, confirm that the project layout matches the generated `.clasp.json` and that the root manifest is valid JSON.
 - If you change the manifest after the initial pull, review the overwrite prompt when pushing.
 

@@ -30,7 +30,7 @@
     {
       "label": "CLASP: Pull from Google",
       "type": "shell",
-      "command": "clasp pull",
+      "command": "npx --no-install clasp pull",
       "options": {
         "shell": {
           "executable": "cmd.exe",
@@ -46,7 +46,7 @@
     {
       "label": "CLASP: Push to Google",
       "type": "shell",
-      "command": "clasp push",
+      "command": "npx --no-install clasp push",
       "options": {
         "shell": {
           "executable": "cmd.exe",

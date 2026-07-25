@@ -43,9 +43,8 @@ $projectReadme = @"
 A Google Apps Script project created from the GAS template.
 
 ## Getting started
-1. Install dependencies with `npm install`
-2. Authenticate CLASP if needed with `npx clasp login`
-3. Edit the Apps Script files in the `src` folder and deploy when ready
+1. Authenticate CLASP once with `npx clasp login` if you have not already done so.
+2. Edit the Apps Script files in the `src` folder and deploy when ready
 
 ## Project files
 - `src/` contains the Apps Script source files
@@ -70,16 +69,28 @@ $claspConfig = @{
 }
 $claspConfig | ConvertTo-Json -Depth 10 | Set-Content -Path $claspFile -Encoding utf8
 
+Write-Host 'Installing project dependencies...' -ForegroundColor Cyan
+Push-Location $TargetRoot
+try {
+    npm install --no-audit --no-fund
+    if ($LASTEXITCODE -ne 0) {
+        throw "npm install failed with exit code $LASTEXITCODE"
+    }
+}
+finally {
+    Pop-Location
+}
+
 if ($ScriptId) {
     Write-Host "Updating .clasp.json with script ID: $ScriptId" -ForegroundColor Yellow
 
     Write-Host 'Pulling Apps Script project into the new folder...' -ForegroundColor Cyan
     Push-Location $TargetRoot
     try {
-        npx clasp pull
+        npx --no-install clasp pull
     }
     catch {
-        Write-Warning 'clasp pull failed. Ensure CLASP is installed and authenticated.'
+        throw 'clasp pull failed. Ensure CLASP is installed and authenticated.'
     }
     Pop-Location
 }
@@ -99,4 +110,4 @@ Write-Host "New project created at: $TargetRoot" -ForegroundColor Green
 Write-Host 'Restoring template back to vanilla...' -ForegroundColor Cyan
 & "$TemplateRoot\scripts\restore-gas-template.ps1"
 Write-Host 'Template restored to vanilla.' -ForegroundColor Green
-Write-Host "Next steps: cd '$TargetRoot', npm install, verify project files, initialize Git, and push to GitHub." -ForegroundColor Cyan
+Write-Host "Next steps: cd '$TargetRoot', verify project files, initialize Git, and push to GitHub." -ForegroundColor Cyan
