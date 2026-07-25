@@ -26,7 +26,7 @@ Write-Host "Destination: $TargetRoot" -ForegroundColor Cyan
 
 New-Item -Path $TargetRoot -ItemType Directory -Force | Out-Null
 
-$exclude = @('.git', 'node_modules', 'scripts')
+$exclude = @('.git', 'node_modules', 'scripts', 'gas-project-template.md')
 Get-ChildItem -Force -Path $TemplateRoot | Where-Object { $exclude -notcontains $_.Name } | ForEach-Object {
     $dest = Join-Path $TargetRoot $_.Name
     if ($_.PSIsContainer) {

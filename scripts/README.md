@@ -19,7 +19,7 @@ Parameters:
 
 This script:
 
-- copies the template into the new project folder
+- copies the template into the new project folder (excluding template-only assets like `gas-project-template.md`)
 - creates a valid `.clasp.json` rooted at `src`
 - updates `.clasp.json` with the provided script ID
 - pulls the Apps Script project if an ID is provided

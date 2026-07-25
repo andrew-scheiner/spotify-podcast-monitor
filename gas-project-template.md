@@ -26,7 +26,7 @@ cd "C:\Users\andre\Dev\Templates\gas-project-template"
 
 ## What the script does
 
-- copies the template contents into a new folder, excluding `.git`, `node_modules`, and `scripts`
+- copies the template contents into a new folder, excluding `.git`, `node_modules`, `scripts`, and `gas-project-template.md`
 - writes a project-specific README for the new project
 - creates `.clasp.json` for CLASP
 - optionally pulls the remote Apps Script project into the new folder
@@ -54,3 +54,4 @@ cd "C:\Users\andre\Dev\Templates\gas-project-template"
 
 - `node_modules` is not part of the template and is not copied into new projects.
 - The `scripts` directory is used only for template automation and is not copied into new projects.
+- `gas-project-template.md` is template-only process documentation and is excluded from production project copies.
