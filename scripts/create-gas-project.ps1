@@ -44,7 +44,8 @@ A Google Apps Script project created from the GAS template.
 
 ## Getting started
 1. Authenticate CLASP once with `npx clasp login` if you have not already done so.
-2. Edit the Apps Script files in the `src` folder and deploy when ready
+2. Edit the Apps Script files in the `src` folder and deploy when ready.
+3. Initialize Git, create a GitHub remote, and push the project when you are ready. For example: `gh repo create <repo-name> --private --source . --remote origin --push`.
 
 ## Project files
 - `src/` contains the Apps Script source files

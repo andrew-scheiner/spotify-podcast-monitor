@@ -31,4 +31,3 @@ Library alias autocomplete is driven by `src/LibraryGlobals.d.ts`. Keep it align
 
 - `node_modules` is not part of the template and is excluded from new copies
 - `scripts` is used only for template automation and is not copied into new projects
-- `gas-project-template.md` is template-only process documentation and is excluded from new projects
