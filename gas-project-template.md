@@ -35,11 +35,13 @@ cd "C:\Users\andre\Dev\Templates\gas-project-template"
 ## After the project is created
 
 1. Open the new project folder.
-2. Authenticate CLASP once with `npx clasp login` if you have not already done so.
-3. Review the generated files, especially `src/`, `appsscript.json`, and `.clasp.json`.
-4. Make sure `appsscript.json` stays in the project root, not inside `src/`.
-5. Save `appsscript.json` as plain UTF-8 without a BOM so CLASP can parse it correctly.
-6. Initialize Git and push to GitHub when you are ready.
+2. Open the new project in VS Code.
+3. Review the pulled Apps Script source files next.
+4. Authenticate CLASP once with `npx clasp login` if you have not already done so.
+5. Review the generated files, especially `src/`, `appsscript.json`, and `.clasp.json`.
+6. Make sure `appsscript.json` stays in the project root, not inside `src/`.
+7. Save `appsscript.json` as plain UTF-8 without a BOM so CLASP can parse it correctly.
+8. Initialize Git, create a GitHub remote, and push the project when you are ready. For example: `gh repo create <repo-name> --private --source . --remote origin --push`.
 
 ## CLASP and file layout notes
 
