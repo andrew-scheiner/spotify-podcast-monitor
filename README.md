@@ -12,12 +12,10 @@ cd "C:\Users\andre\Dev\Templates\gas-project-template"
 ```
 
 The script will:
-
 - copy the vanilla template into the new project folder
 - update `.clasp.json` with the provided Apps Script project ID
 - optionally pull the Apps Script project into the new folder
-- move any pulled Apps Script source files into `src/` and rename them to `.gs` so they appear in VS Code
-- restore the template back to vanilla after project creation
+- restore the template back to vanilla after project creation, leaving the template repository clean for the next project
 
 Library alias autocomplete is driven by `src/LibraryGlobals.d.ts`. Keep it aligned with
 `appsscript.json > dependencies > libraries > userSymbol` values.
@@ -27,9 +25,7 @@ Library alias autocomplete is driven by `src/LibraryGlobals.d.ts`. Keep it align
 1. `cd` into the new project folder
 2. run `npm install`
 3. verify files and project-specific settings
-4. if you provided a Script ID, confirm CLASP pulled the cloud project files into `src/` as `.gs` files
-5. if you need to sync later, run `npx --no-install clasp pull` and ensure the pulled files are placed in `src/`
-6. initialize Git and push to GitHub
+4. initialize Git and push to GitHub
 
 ## Notes
 
