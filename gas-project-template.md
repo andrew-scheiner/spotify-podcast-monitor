@@ -57,3 +57,9 @@ cd "C:\Users\andre\Dev\Templates\gas-project-template"
 - `node_modules` is not part of the template and is not copied into new projects.
 - The `scripts` directory is used only for template automation and is not copied into new projects.
 - `gas-project-template.md` is template-only process documentation and is excluded from production project copies.
+
+## Date handling guidance for new projects
+
+- When writing dates to Google Sheets, keep values as real Date objects whenever possible rather than converting them to strings too early.
+- Prefer shared GAS library date helpers or equivalent normalization logic so dates are written consistently across time zones.
+- If you need to write a date to a sheet, normalize it to a local calendar date and write it as a Date value to avoid timezone-related day shifts.
