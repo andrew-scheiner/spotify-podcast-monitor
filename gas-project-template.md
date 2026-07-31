@@ -30,18 +30,20 @@ cd "C:\Users\andre\Dev\Templates\gas-project-template"
 - writes a project-specific README for the new project
 - creates `.clasp.json` for CLASP
 - optionally pulls the remote Apps Script project into the new folder
+- moves any pulled Apps Script source files into `src/` and renames them to `.gs` so they are available in VS Code
 - restores the template so it remains ready for future use
 
 ## After the project is created
 
 1. Open the new project folder.
 2. Open the new project in VS Code.
-3. Review the pulled Apps Script source files next.
+3. If you supplied a Script ID, confirm that the pulled cloud project files now appear in `src/` as `.gs` files.
 4. Authenticate CLASP once with `npx clasp login` if you have not already done so.
 5. Review the generated files, especially `src/`, `appsscript.json`, and `.clasp.json`.
 6. Make sure `appsscript.json` stays in the project root, not inside `src/`.
 7. Save `appsscript.json` as plain UTF-8 without a BOM so CLASP can parse it correctly.
-8. Initialize Git, create a GitHub remote, and push the project when you are ready. For example: `gh repo create <repo-name> --private --source . --remote origin --push`.
+8. If you need to sync the cloud project later, run `npx --no-install clasp pull` and ensure the pulled files land in `src/`.
+9. Initialize Git, create a GitHub remote, and push the project when you are ready. For example: `gh repo create <repo-name> --private --source . --remote origin --push`.
 
 ## CLASP and file layout notes
 

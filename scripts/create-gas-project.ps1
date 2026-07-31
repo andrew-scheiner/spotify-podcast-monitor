@@ -98,6 +98,7 @@ if ($ScriptId) {
 
 New-Item -ItemType Directory -Path (Join-Path $TargetRoot 'src') -Force | Out-Null
 $sourceDirectory = Join-Path $TargetRoot 'src'
+Write-Host 'Importing pulled Apps Script files into src/...' -ForegroundColor Cyan
 $pulledScriptFiles = Get-ChildItem -LiteralPath $TargetRoot -Recurse -File -Filter '*.js' | Where-Object { $_.FullName -notmatch '[\\/]node_modules[\\/]' }
 foreach ($scriptFile in $pulledScriptFiles) {
     $destinationPath = Join-Path $sourceDirectory ([System.IO.Path]::ChangeExtension($scriptFile.Name, '.gs'))
