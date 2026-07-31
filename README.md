@@ -12,6 +12,7 @@ cd "C:\Users\andre\Dev\Templates\gas-project-template"
 ```
 
 The script will:
+
 - copy the vanilla template into the new project folder
 - update `.clasp.json` with the provided Apps Script project ID
 - optionally pull the Apps Script project into the new folder
