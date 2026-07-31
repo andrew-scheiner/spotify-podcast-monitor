@@ -15,7 +15,7 @@ The script will:
 - copy the vanilla template into the new project folder
 - update `.clasp.json` with the provided Apps Script project ID
 - optionally pull the Apps Script project into the new folder
-- restore the template back to vanilla after project creation, leaving the template repository clean for the next project
+- restore the template back to vanilla after project creation
 
 Library alias autocomplete is driven by `src/LibraryGlobals.d.ts`. Keep it aligned with
 `appsscript.json > dependencies > libraries > userSymbol` values.
