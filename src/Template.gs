@@ -1,9 +1,16 @@
-// Placeholder sheet utility functions.
+function backupSpreadsheet() {
+  GASLibrary.copySpreadsheetToDrive(ZZZ_KMS_ID, "Backup");
+}
 
-function resetFilter() {
-    // Add reset filter logic here.
+function hideDoneActions() {
+  GASLibrary.hideDoneActions();
+}
+
+function resetFilter(){
+  GASLibrary.resetFilter();
 }
 
 function sortActiveSheet() {
-    // Add sheet sorting logic here.
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  GASLibrary.sortSheetByConfig(ss, SORT_CONFIGS);
 }
