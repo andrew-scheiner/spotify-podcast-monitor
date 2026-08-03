@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 //@OnlyCurrentDoc
 
 // Note: A weekly trigger already runs `checkForNewEpisodes()` every Sunday between 02:00 and 03:00
@@ -640,19 +639,4 @@ function batchSetRowValues(sheet, header, updates) {
   });
 
   dataRange.setValues(values);
-=======
-/**
- * Vanilla Google Apps Script template entry point.
- * Replace or extend this file with your project's functions.
- */
-function onOpen(e) {
-    const ui = SpreadsheetApp.getUi();
-    ui.createMenu('Template')
-        .addItem('Say Hello', 'sayHello')
-        .addToUi();
-}
-
-function sayHello() {
-    SpreadsheetApp.getUi().alert('Hello from the GAS template!');
->>>>>>> 90826689ac6d4f8b5f8a5c13ddc67b5b9835ca4f
 }
