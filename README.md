@@ -1,49 +1,33 @@
-# Spotify Podcast Monitor
+# Google Apps Script Project Template
 
-This repository contains the Google Apps Script source for a Google Sheets-based podcast monitoring workflow. The script checks a list of podcast shows, finds newly published episodes, and sends email updates to configured listeners.
+A reusable starter for Google Apps Script projects using CLASP and VS Code.
 
-## What it does
+## Create a new project
 
-- Reads podcast data from the `Podcasts` sheet
-- Looks up new episodes from Spotify show IDs
-- Stores the latest checked episode date
-- Sends notifications to listeners based on the `Listener` column
-- Adds a custom menu in Google Sheets for manual actions
-- Runs the main check function automatically on early Sunday morning via a time-driven trigger
+From the template folder, run:
 
-## Project structure
-
-- `src/Main.gs` - main workflow, menu actions, and episode checks
-- `src/Config.gs` - listener emails and sorting configuration
-- `src/Sources.gs` - helper functions for data sources
-- `src/Triggers.gs` - `onOpen` and `onEdit` handlers
-- `appsscript.json` - Apps Script project configuration
-
-## Requirements
-
-- A Google Apps Script project
-- Node.js and `clasp`
-- A Google Sheet with the required columns:
-  - `Spotify Show ID`
-  - `Podcast Name`
-  - `Last Episode Date`
-  - `Listener`
-
-## Development
-
-```bash
-npm install
-clasp pull
-clasp push
+```powershell
+cd "C:\Users\andre\Dev\Templates\gas-project-template"
+.\scripts\create-gas-project.ps1 -ProjectName "My Project" -DestinationPath "C:\Users\andre\Dev\Projects\Business" -ScriptId "<SCRIPT_ID>"
 ```
 
-## Usage
+The script will:
+- copy the vanilla template into the new project folder
+- update `.clasp.json` with the provided Apps Script project ID
+- optionally pull the Apps Script project into the new folder
+- restore the template back to vanilla after project creation
 
-1. Open the bound Google Sheet.
-2. Use the custom menu to run the check manually or reset the last run date.
-3. Optionally set a time-driven trigger for recurring checks.
+Library alias autocomplete is driven by `src/LibraryGlobals.d.ts`. Keep it aligned with
+`appsscript.json > dependencies > libraries > userSymbol` values.
+
+## After creation
+
+1. `cd` into the new project folder
+2. run `npm install`
+3. verify files and project-specific settings
+4. initialize Git and push to GitHub
 
 ## Notes
 
-- The project uses the Apps Script libraries configured in `appsscript.json`.
-- A weekly trigger is intended for automatic episode checks.
+- `node_modules` is not part of the template and is excluded from new copies
+- `scripts` is used only for template automation and is not copied into new projects
