@@ -30,4 +30,4 @@ Library alias autocomplete is driven by `src/LibraryGlobals.d.ts`. Keep it align
 ## Notes
 
 - `node_modules` is not part of the template and is excluded from new copies
-- `scripts` is used only for template automation and is not copied into new projects
+- The PowerShell scripts `scripts/create-gas-project.ps1` and `scripts/restore-gas-template.ps1` are template-maintained automation files. They are not required in newly created projects and should remain in the template repository rather than being copied into project folders
