@@ -1,15 +1,6 @@
 # Spotify Podcast Monitor
 
-This repository contains the Google Apps Script source for a Google Sheets-based podcast monitoring workflow. The script checks a list of podcast shows, finds newly published episodes, and sends email updates to configured listeners.
-
-## What it does
-
-- Reads podcast data from the `Podcasts` sheet
-- Looks up new episodes from Spotify show IDs
-- Stores the latest checked episode date
-- Sends notifications to listeners based on the `Listener` column
-- Adds a custom menu in Google Sheets for manual actions
-- Runs the main check function automatically on early Sunday morning via a time-driven trigger
+A Google Apps Script project for monitoring podcast episodes and sending updates from a Google Sheet.
 
 ## Project structure
 
@@ -38,13 +29,5 @@ clasp pull
 clasp push
 ```
 
-## Usage
-
-1. Open the bound Google Sheet.
-2. Use the custom menu to run the check manually or reset the last run date.
-3. Optionally set a time-driven trigger for recurring checks.
-
-## Notes
-
-- The project uses the Apps Script libraries configured in `appsscript.json`.
-- A weekly trigger is intended for automatic episode checks.
+Library alias autocomplete is driven by `src/LibraryGlobals.d.ts`. Keep it aligned with
+`appsscript.json > dependencies > libraries > userSymbol` values.
