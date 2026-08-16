@@ -28,6 +28,7 @@ This repository contains the Google Apps Script source for a Google Sheets-based
   - `Podcast Name`
   - `Last Episode Date`
   - `Listener`
+  - `Status` (use `Active`, `Ignore`, or `Stopped`)
 
 ## Development
 

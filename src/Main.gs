@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 //@OnlyCurrentDoc
 
 // Note: A weekly trigger already runs `checkForNewEpisodes()` every Sunday between 02:00 and 03:00
@@ -81,6 +80,14 @@ function setLastRunDate(date) {
 // 1️⃣ Entry Points (Top of file) “What runs?”
 // ======================================================================
 
+function shouldSkipPodcastStatus(value) {
+  const normalized = String(value ?? '')
+    .trim()
+    .toLowerCase();
+
+  return normalized === 'ignore' || normalized === 'stopped';
+}
+
 /**
  * Main entry point — checks for new podcast episodes since the last run.
  */
@@ -100,6 +107,7 @@ function checkForNewEpisodes(forceBackfillDays = null, forceSendAll = false) {
   const COL_NAME = header.indexOf('Podcast Name');
   const COL_LAST_DATE = header.indexOf('Last Episode Date');
   const COL_LISTENER = header.indexOf('Listener');
+  const COL_STATUS = header.indexOf('Status');
 
   if (COL_SHOW_ID === -1 || COL_NAME === -1 || COL_LAST_DATE === -1) {
     throw new Error('Missing required columns in Podcasts sheet');
@@ -119,9 +127,15 @@ function checkForNewEpisodes(forceBackfillDays = null, forceSendAll = false) {
       `${showId} | lastDateRaw type: ${typeof lastDateRaw} | value: ${lastDateRaw} | isDate: ${lastDateRaw instanceof Date}`
     );
     const listenerCode = row[COL_LISTENER];
+    const statusValue = COL_STATUS !== -1 ? row[COL_STATUS] : '';
 
     if (!showId) {
       Logger.log(`Row ${index + 2} skipped — empty showId`);
+      return;
+    }
+
+    if (shouldSkipPodcastStatus(statusValue)) {
+      Logger.log(`Row ${index + 2} skipped — status: ${statusValue || 'Active'}`);
       return;
     }
 
@@ -640,19 +654,5 @@ function batchSetRowValues(sheet, header, updates) {
   });
 
   dataRange.setValues(values);
-=======
-/**
- * Vanilla Google Apps Script template entry point.
- * Replace or extend this file with your project's functions.
- */
-function onOpen(e) {
-    const ui = SpreadsheetApp.getUi();
-    ui.createMenu('Template')
-        .addItem('Say Hello', 'sayHello')
-        .addToUi();
-}
 
-function sayHello() {
-    SpreadsheetApp.getUi().alert('Hello from the GAS template!');
->>>>>>> 90826689ac6d4f8b5f8a5c13ddc67b5b9835ca4f
 }
