@@ -76,6 +76,20 @@ function setLastRunDate(date) {
   Logger.log(`Updated ${LAST_RUN_DATE_PROP} to ${date.toISOString()}`);
 }
 
+function getEmailAddressForListener(listenerCode) {
+  if (!listenerCode) return null;
+
+  const emailMap = typeof EMAILS_BY_LISTENER !== 'undefined' && EMAILS_BY_LISTENER ? EMAILS_BY_LISTENER : {};
+  const normalizedCode = String(listenerCode).trim();
+
+  return (
+    emailMap[normalizedCode] ||
+    emailMap[normalizedCode.toUpperCase()] ||
+    emailMap[normalizedCode.toLowerCase()] ||
+    null
+  );
+}
+
 // ======================================================================
 // 1️⃣ Entry Points (Top of file) “What runs?”
 // ======================================================================
@@ -257,7 +271,7 @@ function checkForNewEpisodes(forceBackfillDays = null, forceSendAll = false) {
   }
 
   allListeners.forEach((listenerCode) => {
-    const emailAddress = EMAILS_BY_LISTENER[listenerCode];
+    const emailAddress = getEmailAddressForListener(listenerCode);
 
     if (!emailAddress) {
       Logger.log(`No email for listener ${listenerCode}`);
