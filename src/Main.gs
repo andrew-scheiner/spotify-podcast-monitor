@@ -113,6 +113,7 @@ function checkForNewEpisodes(forceBackfillDays = null, forceSendAll = false) {
   const COL_NAME = header.indexOf('Podcast Name');
   const COL_LAST_DATE = header.indexOf('Last Episode Date');
   const COL_LISTENER = header.indexOf('Listener');
+  const COL_STATUS = header.indexOf('Status');
 
   if (COL_SHOW_ID === -1 || COL_NAME === -1 || COL_LAST_DATE === -1) {
     throw new Error('Missing required columns in Podcasts sheet');
@@ -132,6 +133,13 @@ function checkForNewEpisodes(forceBackfillDays = null, forceSendAll = false) {
       `${showId} | lastDateRaw type: ${typeof lastDateRaw} | value: ${lastDateRaw} | isDate: ${lastDateRaw instanceof Date}`
     );
     const listenerCode = row[COL_LISTENER];
+    const statusValue = COL_STATUS !== -1 ? row[COL_STATUS] : '';
+    const normalizedStatus = String(statusValue ?? '').trim().toLowerCase();
+
+    if (normalizedStatus === 'ignore' || normalizedStatus === 'stopped') {
+      Logger.log(`Row ${index + 2} skipped — status: ${statusValue}`);
+      return;
+    }
 
     if (!showId) {
       Logger.log(`Row ${index + 2} skipped — empty showId`);
