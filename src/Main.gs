@@ -13,7 +13,9 @@ function createMenu() {
     .addItem('Set Priority and Status Dropdown Lists', 'setPriorityAndStatusDropdownLists')
     .addItem('Sort Sheet', 'sortActiveSheet')
     .addSeparator()
-    .addItem('Backfill Last 7 Days', 'runBackfillLast7Days');
+    .addItem('Backfill Last 7 Days', 'runBackfillLast7Days')
+    .addItem('View Config Changes', 'viewConfigChanges')
+    ;
   /*
   .addSubMenu(ui.createMenu('Update Data Source(s)')
     .addItem('Update All', 'updateAllDataSources')
