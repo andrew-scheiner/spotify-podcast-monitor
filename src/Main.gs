@@ -2,28 +2,26 @@
 
 // Note: A weekly trigger already runs `checkForNewEpisodes()` every Sunday between 02:00 and 03:00
 
-function createMenu() {
+function onOpen() {
   const ui = SpreadsheetApp.getUi();
-  let customMenu = ui
-    .createMenu('Custom')
+
+  ui.createMenu('Custom')
     .addItem('Backup Spreadsheet', 'backupSpreadsheet')
     .addItem('Reset Filter', 'resetFilter')
-    .addItem('Reset Last Run Date', 'resetLastRunDate')
-    .addItem('Run Check for New Episodes', 'checkForNewEpisodes')
-    .addItem('Set Priority and Status Dropdown Lists', 'setPriorityAndStatusDropdownLists')
     .addItem('Sort Sheet', 'sortActiveSheet')
     .addSeparator()
+    .addItem('Reset Last Run Date', 'resetLastRunDate')
+    .addItem('Run Check for New Episodes', 'checkForNewEpisodes')
     .addItem('Backfill Last 7 Days', 'runBackfillLast7Days')
+    .addSeparator()
     .addItem('View Config Changes', 'viewConfigChanges')
-    ;
-  /*
-  .addSubMenu(ui.createMenu('Update Data Source(s)')
-    .addItem('Update All', 'updateAllDataSources')
-    .addItem('Data Source 1','updateFunction1')
-    .addItem('Data Source 2','updateFunction2'));
-  */
-  customMenu.addToUi();
+    /*
+    .addSubMenu(ui.createMenu('Advanced Options')
+      .addItem('Run Secondary Action', 'secondAction'))
+    */
+    .addToUi();
 }
+
 
 /**
  * Manual helper to run entry point function in case of error with time-triggered version.
@@ -81,7 +79,8 @@ function setLastRunDate(date) {
 function getEmailAddressForListener(listenerCode) {
   if (!listenerCode) return null;
 
-  const emailMap = typeof EMAILS_BY_LISTENER !== 'undefined' && EMAILS_BY_LISTENER ? EMAILS_BY_LISTENER : {};
+  const emailMap =
+    typeof EMAILS_BY_LISTENER !== 'undefined' && EMAILS_BY_LISTENER ? EMAILS_BY_LISTENER : {};
   const normalizedCode = String(listenerCode).trim();
 
   return (
@@ -136,7 +135,9 @@ function checkForNewEpisodes(forceBackfillDays = null, forceSendAll = false) {
     );
     const listenerCode = row[COL_LISTENER];
     const statusValue = COL_STATUS !== -1 ? row[COL_STATUS] : '';
-    const normalizedStatus = String(statusValue ?? '').trim().toLowerCase();
+    const normalizedStatus = String(statusValue ?? '')
+      .trim()
+      .toLowerCase();
 
     if (normalizedStatus === 'ignore' || normalizedStatus === 'stopped') {
       Logger.log(`Row ${index + 2} skipped — status: ${statusValue}`);
