@@ -1,6 +1,6 @@
 # Spotify Podcast Monitor
 
-A Google Apps Script project for monitoring podcast episodes and sending updates from a Google Sheet.
+A Google Apps Script project bound to a Google Sheet which monitors podcast channels and emails notifications of new episodes to specified recipients.
 
 ## Project structure
 
