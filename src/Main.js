@@ -99,12 +99,39 @@ function getEmailAddressForListener(listenerCode) {
  * Main entry point — checks for new podcast episodes since the last run.
  */
 function checkForNewEpisodes(forceBackfillDays = null, forceSendAll = false) {
+  const auditLogs = [];
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  const recordError = (message, rowIndex, context, error) => {
+    auditLogs.push({
+      level: 'ERROR',
+      message: error ? `${message}: ${error.message || error}` : message,
+      rowIndex,
+      context: {
+        ...context,
+        ...(error && error.stack ? { stack: error.stack } : {}),
+      },
+    });
+  };
+
+  try {
+    runCheckForNewEpisodes(forceBackfillDays, forceSendAll, spreadsheet, recordError);
+  } catch (error) {
+    recordError('checkForNewEpisodes failed', '', { phase: 'checkForNewEpisodes' }, error);
+    throw error;
+  } finally {
+    if (auditLogs.length > 0) {
+      writeAuditLogs(getOrCreateAuditSheet(spreadsheet), auditLogs);
+    }
+  }
+}
+
+function runCheckForNewEpisodes(forceBackfillDays, forceSendAll, spreadsheet, recordError) {
   // Guard against GAS time trigger passing event object as first argument
   if (typeof forceBackfillDays !== 'number') {
     forceBackfillDays = null;
   }
 
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Podcasts');
+  const sheet = spreadsheet.getSheetByName('Podcasts');
   const data = sheet.getDataRange().getValues();
 
   const header = data[0];
@@ -184,6 +211,12 @@ function checkForNewEpisodes(forceBackfillDays = null, forceSendAll = false) {
       }
     } catch (err) {
       Logger.log(`${showId} | ERROR parsing date: ${err}`);
+      recordError(
+        'Error parsing last episode date',
+        index + 2,
+        { showId, podcastName: name },
+        err
+      );
       lastDate = null;
     }
 
@@ -195,6 +228,12 @@ function checkForNewEpisodes(forceBackfillDays = null, forceSendAll = false) {
       Logger.log(
         `${showId} | INVALID lastDateRaw: ${lastDateRaw} (type: ${typeof lastDateRaw}) → parsed: ${lastDate}`
       );
+      recordError('Invalid last episode date', index + 2, {
+        showId,
+        podcastName: name,
+        value: lastDateRaw,
+        valueType: typeof lastDateRaw,
+      });
 
       lastDate = null;
     } else {
@@ -232,7 +271,17 @@ function checkForNewEpisodes(forceBackfillDays = null, forceSendAll = false) {
     // =========================================================
     // Fetch episodes
     // =========================================================
-    const newEpisodes = getNewEpisodesForShow(showId, cutoffDate);
+    const newEpisodes = getNewEpisodesForShow(showId, cutoffDate, (error) => {
+      recordError(
+        `Error fetching episodes for show ${showId}`,
+        index + 2,
+        {
+          showId,
+          podcastName: name,
+        },
+        error
+      );
+    });
 
     if (!newEpisodes || newEpisodes.length === 0) return;
 
@@ -269,6 +318,15 @@ function checkForNewEpisodes(forceBackfillDays = null, forceSendAll = false) {
       sheet.getRange(index + 2, COL_LAST_DATE + 1).setValue(new Date(latestDate));
     } catch (err) {
       Logger.log(`Failed updating date for ${showId}: ${err.message}`);
+      recordError(
+        `Failed updating last episode date for show ${showId}`,
+        index + 2,
+        {
+          showId,
+          podcastName: name,
+        },
+        err
+      );
     }
   });
 
@@ -410,7 +468,7 @@ function retryFailedRows(config, retries, context) {
  * - Hard stops at cutoff (no historical backfill)
  * - Minimal, targeted logging
  */
-function getNewEpisodesForShow(showId, cutoffDate) {
+function getNewEpisodesForShow(showId, cutoffDate, onError) {
   try {
     // 🔒 HARD GUARD (important)
     if (!showId || typeof showId !== 'string') {
@@ -483,6 +541,7 @@ function getNewEpisodesForShow(showId, cutoffDate) {
     return allNewEpisodes.sort((a, b) => new Date(b.published) - new Date(a.published));
   } catch (error) {
     Logger.log(`Error fetching episodes for show ${showId}: ${error}`);
+    if (onError) onError(error);
     return [];
   }
 }
