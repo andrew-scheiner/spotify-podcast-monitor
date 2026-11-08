@@ -31,3 +31,7 @@ clasp push
 
 Library alias autocomplete is driven by `src/LibraryGlobals.d.ts`. Keep it aligned with
 `appsscript.json > dependencies > libraries > userSymbol` values.
+
+## Sources
+The original code was sourced from: Code source	https://chatgpt.com/c/689e19e8-2600-8321-b691-9095567927c3
+The API was sourced from: https://developer.spotify.com/dashboard/564b24576a534223a639ccd9372d294a
