@@ -114,7 +114,7 @@ function checkForNewEpisodes(forceBackfillDays = null, forceSendAll = false) {
   };
 
   try {
-    runCheckForNewEpisodes(forceBackfillDays, forceSendAll, spreadsheet, recordError);
+    runCheckForNewEpisodes(forceBackfillDays, forceSendAll, spreadsheet, recordError, auditLogs);
   } catch (error) {
     recordError('checkForNewEpisodes failed', '', { phase: 'checkForNewEpisodes' }, error);
     throw error;
@@ -125,7 +125,7 @@ function checkForNewEpisodes(forceBackfillDays = null, forceSendAll = false) {
   }
 }
 
-function runCheckForNewEpisodes(forceBackfillDays, forceSendAll, spreadsheet, recordError) {
+function runCheckForNewEpisodes(forceBackfillDays, forceSendAll, spreadsheet, recordError, auditLogs) {
   // Guard against GAS time trigger passing event object as first argument
   if (typeof forceBackfillDays !== 'number') {
     forceBackfillDays = null;
@@ -339,6 +339,12 @@ function runCheckForNewEpisodes(forceBackfillDays, forceSendAll, spreadsheet, re
     return;
   }
 
+  const hasAuditErrors = auditLogs.some((log) => log.level === 'ERROR');
+  if (auditLogs.length > 0) {
+    writeAuditLogs(getOrCreateAuditSheet(spreadsheet), auditLogs);
+    auditLogs.length = 0;
+  }
+
   allListeners.forEach((listenerCode) => {
     const emailAddress = getEmailAddressForListener(listenerCode);
 
@@ -356,7 +362,8 @@ function runCheckForNewEpisodes(forceBackfillDays, forceSendAll, spreadsheet, re
         podcastName: item.showName,
         episodes: item.episodes,
       })),
-      []
+      [],
+      hasAuditErrors
     );
 
     MailApp.sendEmail({
@@ -549,7 +556,7 @@ function getNewEpisodesForShow(showId, cutoffDate, onError) {
 /**
  * Builds the HTML email content.
  */
-function generateEmailContent(newEpisodesByPodcast, noNewPodcasts = []) {
+function generateEmailContent(newEpisodesByPodcast, noNewPodcasts = [], hasAuditErrors = false) {
   const styles = {
     container: 'font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 10px;',
     mainTitle: 'color: #333; margin-bottom: 10px;',
@@ -598,7 +605,12 @@ function generateEmailContent(newEpisodesByPodcast, noNewPodcasts = []) {
          style="color: #1DB954; text-decoration: none; font-weight: bold;">
         Monitor Spotify Podcast Updates
       </a>
-    </p></div>`;
+    </p>
+    <p style="${styles.footer}">${
+      hasAuditErrors
+        ? 'See AuditLog for errors that occurred during this operation.'
+        : 'No errors were added to AuditLog durring this operation.'
+    }</p></div>`;
 
   return html;
 }

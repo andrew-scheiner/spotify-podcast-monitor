@@ -2,6 +2,10 @@
 
 A Google Apps Script project bound to a Google Sheet which monitors podcast channels and emails notifications of new episodes to specified recipients.
 
+Notification emails indicate whether errors were recorded for the current run before
+delivery. Errors that occur during or after delivery cannot be reflected in emails
+already sent.
+
 ## Project structure
 
 - `src/Main.gs` - main workflow, menu actions, and episode checks
